@@ -22,4 +22,6 @@ $included_circles = array();
 /* Shows up in the 'Received' email header */
 $localhost = '<your server>';
 
+/* Path to log file */
+$log_file = '/path/to/log';
 ?>

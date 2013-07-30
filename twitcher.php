@@ -4,9 +4,14 @@
 require_once 'Mail.php';
 require_once 'conf.php';
 
-$json = file_get_contents($video_url);
+if (!($posted = @file_get_contents($log_file))) {
+    if (!file_put_contents($log_file, "Twitcher log:\n")) {
+        error_log('Failed to init log');
+        exit(1);
+    }
+}
 
-if (!$json) {
+if (!($json = @file_get_contents($video_url))) {
     error_log('failed to get json');
     exit(1);
 }
@@ -16,13 +21,19 @@ if (!($videos = json_decode($json))) {
     exit(1);
 }
 
+if (!$videos->{'videos'}) {
+    echo "No highlights to post\n";
+    exit(0);
+}
+
 foreach ($videos->{'videos'} as $video) {
 
-    $tag = '#twitch #'.preg_replace('/\s+/', '', $video->{'game'});
+    $tags = '#twitch #'.preg_replace('/\s+/', '', $video->{'game'});
 
-    $posts[] = $video->{'title'}.' ('
-              .$video->{'url'}.') '
-              .$tag;
+    $body = $video->{'title'}.' ('
+           .$video->{'url'}.') '
+           .$tags;
+    $posts[] = array('body' => $body, 'id' => $video->{'_id'});
 }
 
 $circles = '';
@@ -44,12 +55,24 @@ $smtp = Mail::factory('smtp', array(
     'persist' => true,
 ));
 
-foreach ($posts as $post) {
-    $body = $post.$circles;
+while ($post = array_shift($posts)) {
+    if (preg_match('/\b'.$post['id'].'\b/', $posted)) continue;
+    break;
+}
 
+if ($post) {
+    $body = $post['body'].$circles;
     $mail = $smtp->send($headers['To'], $headers, $body);
-    if (PEAR::isError($mail)) echo $mail->getMessage()."\n";
+
+    if (PEAR::isError($mail)) error_log($mail->getMessage());
     else echo "Sent '$body'\n";
 
-    if ($post !== end($posts)) sleep(300);
+    $log_entry = date(DATE_ATOM).': '.$post['id']."\n";
+    if (!file_put_contents($log_file, $log_entry, FILE_APPEND)) {
+        error_log("Failed to log post $log_entry");
+        exit(1);
+    }
 }
+
+if ($posts) echo count($posts)." video(s) still in the queue\n";
+
