@@ -2,8 +2,8 @@
 
 /* Edit this file with your Twitch and Google information */
 
-/* URL to fetch the JSON for user highlight videos */
-$video_url = 'https://api.twitch.tv/kraken/channels/<twitch username>/videos';
+/* Twitch.tv username to search for new videos */
+$twitch_user = '<twitch username>'
 
 /* Full gmail address */
 $gmail_user = '<your-gmail-handle>@gmail.com';

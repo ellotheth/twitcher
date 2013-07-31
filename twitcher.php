@@ -4,6 +4,8 @@
 require_once 'Mail.php';
 require_once 'conf.php';
 
+define('TWITCH_URL', 'https://api.twitch.tv/kraken/channels/USERNAME/videos');
+
 if (!($posted = @file_get_contents($log_file))) {
     if (!file_put_contents($log_file, "Twitcher log:\n")) {
         error_log('Failed to init log');
@@ -11,6 +13,7 @@ if (!($posted = @file_get_contents($log_file))) {
     }
 }
 
+$video_url = str_replace('/USERNAME/', "/$twitch_user/", TWITCH_URL);
 if (!($json = @file_get_contents($video_url))) {
     error_log('failed to get json');
     exit(1);
@@ -26,18 +29,18 @@ if (!$videos->{'videos'}) {
     exit(0);
 }
 
+$circles = '';
+foreach ($included_circles as $circle) $circles .= " +$circle";
+
 foreach ($videos->{'videos'} as $video) {
 
     $tags = '#twitch #'.preg_replace('/\s+/', '', $video->{'game'});
 
     $body = $video->{'title'}.' ('
            .$video->{'url'}.') '
-           .$tags;
+           .$tags.$circles;
     $posts[] = array('body' => $body, 'id' => $video->{'_id'});
 }
-
-$circles = '';
-foreach ($included_circles as $circle) $circles .= " +$circle";
 
 $headers = array(
     'From' => $gmail_user,
@@ -61,11 +64,10 @@ while ($post = array_shift($posts)) {
 }
 
 if ($post) {
-    $body = $post['body'].$circles;
-    $mail = $smtp->send($headers['To'], $headers, $body);
+    $mail = $smtp->send($headers['To'], $headers, $post['body']);
 
     if (PEAR::isError($mail)) error_log($mail->getMessage());
-    else echo "Sent '$body'\n";
+    else echo "Sent '".$post['body']."'\n";
 
     $log_entry = date(DATE_ATOM).': '.$post['id']."\n";
     if (!file_put_contents($log_file, $log_entry, FILE_APPEND)) {
