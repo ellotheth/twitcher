@@ -62,7 +62,8 @@ $circles = '+'.implode(' +', $included_circles);
 foreach ($videos->{'videos'} as $video) {
     if (preg_match('/\b'.$video->{'_id'}.'\b/', $posted)) continue;
 
-    $tags = '#twitch #'.preg_replace('/\s+/', '', $video->{'game'});
+    /* strip characters in the game name that won't work in a hashtag */
+    $tags = '#twitch #'.preg_replace('/[^\w]+/', '', $video->{'game'});
 
     /* Format: title (URL) tags circles */
     $body = $video->{'title'}.' ('
