@@ -29,8 +29,7 @@ if (!$videos->{'videos'}) {
     exit(0);
 }
 
-$circles = '';
-foreach ($included_circles as $circle) $circles .= " +$circle";
+$circles = '+'.implode(' +', $included_circles);
 
 foreach ($videos->{'videos'} as $video) {
 
@@ -38,7 +37,8 @@ foreach ($videos->{'videos'} as $video) {
 
     $body = $video->{'title'}.' ('
            .$video->{'url'}.') '
-           .$tags.$circles;
+           .$tags.' '
+           .$circles;
     $posts[] = array('body' => $body, 'id' => $video->{'_id'});
 }
 
