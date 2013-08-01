@@ -10,20 +10,19 @@ $twitch_user = '<twitch username>'
 /* Full gmail address */
 $gmail_user = '<your-gmail-handle>@gmail.com';
 
-/* Application specific password if you have two-factor authentication:
+/* Application-specific password if you have two-factor authentication:
  * https://accounts.google.com/b/0/IssuedAuthSubTokens
  */
 $gmail_pass = '<google password>';
 
-/* Setup here: http://bamajr.com/2013/02/16/posting-to-google-plus-via-email/ */
+/* Setup: http://bamajr.com/2013/02/16/posting-to-google-plus-via-email/ */
 $gplus_email = '<gvoice #>.33669.<unique key>@txt.voice.google.com';
 
 /* Circles to include in the broadcast
  *
- * Your circles:       $included_circles = array();
- * Public:             $included_circles = array('Public');
- * Gamers and Friends: $included_circles = array('Gamers', 'Friends');
- *
+ * Your circles (default): $included_circles = array();
+ * Public:                 $included_circles = array('Public');
+ * Gamers and Friends:     $included_circles = array('Gamers', 'Friends');
  * etc.
  */
 $included_circles = array();
@@ -31,6 +30,5 @@ $included_circles = array();
 /* Shows up in the 'Received' email header instead of 'localhost' */
 $localhost = '<your server>';
 
-/* Path to log file */
+/* Path to posting log */
 $log_file = '/path/to/log';
-?>
