@@ -1,7 +1,10 @@
 #!/usr/bin/php
 <?php
 
+/* needs PEAR packages Mail and Net_SMTP */
 require_once 'Mail.php';
+
+/* see conf.sample.php */
 require_once 'conf.php';
 
 define('TWITCH_URL', 'https://api.twitch.tv/kraken/channels/USERNAME/videos');
@@ -57,6 +60,11 @@ $smtp = Mail::factory('smtp', array(
     'password' => $gmail_pass,
     'persist' => true,
 ));
+
+if ($smtp instanceof PEAR_Error) {
+    error_log('failed to create mailer: '.$smtp->getMessage());
+    exit(1);
+}
 
 while ($post = array_shift($posts)) {
     if (preg_match('/\b'.$post['id'].'\b/', $posted)) continue;
