@@ -32,19 +32,6 @@ if (!$videos->{'videos'}) {
     exit(0);
 }
 
-$circles = '+'.implode(' +', $included_circles);
-
-foreach ($videos->{'videos'} as $video) {
-
-    $tags = '#twitch #'.preg_replace('/\s+/', '', $video->{'game'});
-
-    $body = $video->{'title'}.' ('
-           .$video->{'url'}.') '
-           .$tags.' '
-           .$circles;
-    $posts[] = array('body' => $body, 'id' => $video->{'_id'});
-}
-
 $headers = array(
     'From' => $gmail_user,
     'To' => $gplus_email,
@@ -66,22 +53,34 @@ if ($smtp instanceof PEAR_Error) {
     exit(1);
 }
 
-while ($post = array_shift($posts)) {
-    if (preg_match('/\b'.$post['id'].'\b/', $posted)) continue;
-    break;
+$circles = '+'.implode(' +', $included_circles);
+
+foreach ($videos->{'videos'} as $video) {
+    if (preg_match('/\b'.$video->{'_id'}.'\b/', $posted)) continue;
+
+    $tags = '#twitch #'.preg_replace('/\s+/', '', $video->{'game'});
+
+    $body = $video->{'title'}.' ('
+           .$video->{'url'}.') '
+           .$tags.' '
+           .$circles;
+    $posts[] = array('body' => $body, 'id' => $video->{'_id'});
 }
+if (!isset($posts)) exit(0);
 
-if ($post) {
-    $mail = $smtp->send($headers['To'], $headers, $post['body']);
+$post = array_shift($posts);
+$mail = $smtp->send($headers['To'], $headers, $post['body']);
 
-    if (PEAR::isError($mail)) error_log($mail->getMessage());
-    else echo "Sent '".$post['body']."'\n";
+if (PEAR::isError($mail)) {
+    error_log($mail->getMessage());
+    exit(1);
+}
+else echo "Sent '".$post['body']."'\n";
 
-    $log_entry = date(DATE_ATOM).': '.$post['id']."\n";
-    if (!file_put_contents($log_file, $log_entry, FILE_APPEND)) {
-        error_log("Failed to log post $log_entry");
-        exit(1);
-    }
+$log_entry = date(DATE_ATOM).': '.$post['id']."\n";
+if (!file_put_contents($log_file, $log_entry, FILE_APPEND)) {
+    error_log("Failed to log post $log_entry");
+    exit(1);
 }
 
 if ($posts) echo count($posts)." video(s) still in the queue\n";
