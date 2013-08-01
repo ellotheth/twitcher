@@ -1,2 +1,4 @@
 *.log
+*.cfg
+*.bak
 conf.php

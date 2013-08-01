@@ -20,12 +20,13 @@ The post itself ends up looking like this:
 1. Clone the repo
 2. Copy `conf.sample.php` to `conf.php` and update it with your own settings (see the comments for details)
 3. Make sure twitcher.php is executable
-4. Run twitch.php directly, or throw it in a cron job
+4. Run twitcher.php directly, or throw it in a cron job
 
 ## Caveats
 
 - Google has not seen fit to hand developers a posting API, so this script hacks its way through the SMS G+ interface with a Google Voice pseudo-text-message. Google Voice will get (for lack of a better term) clogged if you send it several updates simultaneously, which is why the script sends one at a time and saves the rest. Trust me, don't just run this in a loop. I had G+ posts showing up six hours after I'd triggered them, it was absurd.
 - The mechanism that grabs all your video highlights is fairly stupid, so don't lose your posting log or you'll get duplicate posts. If you do lose your log, you can recreate it as a text file, then add all your Twitch video IDs (separated by spaces, commas, new-lines, etc).
+- I haven't tried it on Windows. Might work fine!
 
 ## Questions/comments/contributions
 

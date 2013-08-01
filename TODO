@@ -1,0 +1,5 @@
+(A) add twitter posting @feature @post
+add pump.io posting? @feature @post
+(B) use some other storage for the log than a flat file. sqlite? @feature @log
+(B) make the post format customizable @feature @post
+also post when the user's stream goes live @feature @post
