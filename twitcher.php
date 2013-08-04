@@ -56,19 +56,24 @@ if ($smtp instanceof PEAR_Error) {
     exit(1);
 }
 
+/* set up circles and tags */
+$circles = ($included_circles) ? '+'.implode(' +', $included_circles).' ' : '';
+$tags = ($included_tags) ? '#'.implode(' #', $included_tags).' ' : '';
+
 /* compose a message for each video to be posted, skipping videos that were
  * already posted */
-$circles = '+'.implode(' +', $included_circles);
 foreach ($videos->{'videos'} as $video) {
     if (preg_match('/\b'.$video->{'_id'}.'\b/', $posted)) continue;
 
     /* strip characters in the game name that won't work in a hashtag */
-    $tags = '#twitch #'.preg_replace('/[^\w]+/', '', $video->{'game'});
+    if ($video->{'game'}) {
+        $gametag = '#'.preg_replace('/[^\w]+/', '', $video->{'game'}).' ';
+    } else $gametag = '';
 
     /* Format: title (URL) tags circles */
     $body = $video->{'title'}.' ('
            .$video->{'url'}.') '
-           .$tags.' '
+           .$tags.$gametag
            .$circles;
     $posts[] = array('body' => $body, 'id' => $video->{'_id'});
 }

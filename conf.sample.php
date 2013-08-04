@@ -32,3 +32,6 @@ $localhost = '<your server>';
 
 /* Path to posting log */
 $log_file = '/path/to/log';
+
+/* Hashtags to include with each post */
+$included_tags = array('twitch');
